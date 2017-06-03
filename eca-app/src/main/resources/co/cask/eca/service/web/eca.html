@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Event Condition Action</title>
+
+    <link rel="stylesheet" type="text/css" href="http://cdn.datatables.net/1.10.7/css/jquery.dataTables.css">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script type="text/javascript" src="http://cdn.datatables.net/1.10.7/js/jquery.dataTables.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+    <style type="text/css">
+        body {
+            font-family: "WeblySleek UI","Segoe UI","Helvetica Neue",Arial,sans-serif;
+            color: #000;
+            font-size: 12px;
+            font-weight: 200;
+            line-height: 1.2;
+        }
+
+        div.container {
+            overflow: auto;
+            width: 100%
+        }
+
+        .logo {
+            width: 48px;
+        }
+
+        .upload {
+            height: 48px;
+        }
+
+        .download {
+            width: 20px;
+        }
+
+        .action-button {
+            width: 20px;
+            cursor: pointer;
+            cursor: hand;
+            vertical-align: top;
+        }
+
+        .menu_item {
+            font-family: "WeblySleek UI","Segoe UI","Helvetica Neue",Arial,sans-serif;
+            color: #000;
+            font-size: 16px;
+            font-weight: 400;
+            line-height: 2.0;
+            padding-left: 8px;
+        }
+
+        .link {
+            color: #ff6f00;
+            cursor: pointer;
+        }
+
+        .modal-header {
+            background-color: slategrey;
+            color: white;
+        }
+
+        .close {
+            color: white;
+            opacity: 1;
+        }
+
+        .close:hover {
+            color: white;
+        }
+
+        .w3-bar {
+            height: 50px;
+            background-color: #333!important;
+        }
+
+        .w3-bar-item {
+            height: 100%;
+            font-size: 15px;
+            font-color: white;
+        }
+
+        .w3-btn, .w3-button {
+            color: white;
+        }
+
+        .btn-info {
+            background-color: slategrey;
+            float: right;
+        }
+
+        .btn-info:hover {
+            border-color: darkorange;
+            background-color: #333;
+        }
+
+        .eca-title {
+            float: left;
+            font-size: 16px;
+            vertical-align: middle;
+            line-height: 50px;
+            color: white;
+            font-weight: 400;
+            padding-right: 25px;
+        }
+
+        .cask-logo {
+            float: left;
+            vertical-align: top;
+            margin-top: 5px;
+            height: 40px;
+        }
+
+        .cdap-logo {
+            vertical-align: top;
+            margin-top: 10px;
+        }
+
+        #explainer {
+            font-size: 15px;
+            font-weight: bolder;
+            color: slategrey;
+        }
+
+        .sub-explainer {
+            font-size: 14px;
+            color: grey;
+        }
+
+        .nav-button:hover {
+            background-color: darkorange!important;
+        }
+
+        .sub-section-rule {
+            margin-top: 2px;
+            margin-bottom: 20px;
+            border: 0;
+            border-top: 2px solid darkorange;
+        }
+
+        .section-title {
+            color: #333;
+            border-bottom: 2px solid darkorange;
+            padding-bottom: 5px;
+            display: inline-block;
+        }
+
+        .rule-key {
+            font-weight: 500;
+        }
+
+        input[type=submit] {
+            color: #ff6f00;
+        }
+
+    </style>
+</head>
+<body style="width:100%; margin: 0; padding: 0" onload="refresh()">
+    <div class="w3-bar header-bar">
+        <img class="cask-logo" src="cask-logo.png"/>
+        <label class="eca-title">Event Condition Action (ECA) </label>
+        <button class="w3-bar-item w3-button nav-button" onclick="openTab('schema-container')" id="schema-nav-button">Schemas</button>
+        <button class="w3-bar-item w3-button nav-button" onclick="openTab('rules-container')" id="rules-nav-button">Rules</button>
+        <span class="pull-right cdap-logo"><img src="cdap-logo.png"/></span>
+    </div>
+    <br/>
+    <div class="w3-container" id="explainer">
+        ECA is an application that leverages CDAP to implement a real-time pipeline using Apache Spark Streaming, where
+        events are parsed, conditions are applied on those events, and actions are executed if those conditions are met.
+    </div>
+
+    <div id="schema-container" class="w3-container contents">
+        <br/><br/>
+        <div>
+            <h4 class="section-title">Schemas</h4>
+        </div>
+        <p class="sub-explainer">
+            Schemas define the fields, types, rules and transformation that parse ingested events.
+        </p>
+        <div style="float: left; width: 100%">
+            <div id="schema-table-placeholder" class="container" style="padding-top: 20px; color: #777">
+            </div>
+        </div>
+
+        <br/><br/>
+
+        <div id="add-schema" class="w3-container">
+            <button type="button" class="btn btn-info" data-toggle="modal" data-target="#add-schema-modal">
+                <img src="plus-ico.svg" alt="" class="action-button"> &nbsp; Add Schema
+            </button>
+            <div id="add-schema-modal" class="modal fade" role="dialog">
+                <div class="modal-dialog">
+
+                    <!-- Modal content-->
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title">Add Schema</h4>
+                        </div>
+                        <div class="modal-body">
+                            <h5>Specify the following information to add a schema.</h5>
+                            <!-- form to add schema -->
+                            <div>
+                                <div class="container" align="left">
+                                    <div class="menu_item">Name</div>
+                                    <input type="text" id="schema-name" class="form-control"><br/>
+                                    <div class="menu_item">Display Name</div>
+                                    <input type="text" id="schema-display-name" class="form-control"><br/>
+                                    <div class="menu_item">Description</div>
+                                    <textarea rows="5" cols="50"  id="schema-description" class="form-control" placeholder="Describe your schema..."></textarea><br/>
+                                    <div class="menu_item">Unique Field Names</div>
+                                    <textarea rows="10" cols="50" id="schema-unique-field-names" class="form-control" placeholder="Enter unique field names in the schema, one field per line"></textarea><br/>
+                                    <div class="menu_item">Directives</div>
+                                    <textarea rows="10" cols="80" id="schema-directives" class="form-control" placeholder="Enter directives that should be applied to this schema, one directive per line. E.g 'parse-as-csv body ,'"></textarea><br/>
+                                </div>
+                            </div>
+                            <!-- end form to add schema -->
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-info" data-dismiss="modal" onclick="addSchema()">Add Schema</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="rules-container" class="w3-container contents" style="display:none">
+        <br/><br/>
+        <div>
+            <h4 class="section-title">Rules</h4>
+        </div>
+        <p class="sub-explainer">
+            Rules are boolean expressions, which can include complex conditions like ‘and’, ‘or’, etc.
+        </p>
+        <div style="float: left; width: 100%">
+            <div id="rules-table-placeholder" class="container" style="padding-top: 20px; color: #777">
+            </div>
+        </div>
+
+        <br/><br/>
+
+        <div id="add-rule" class="w3-container">
+            <button type="button" class="btn btn-info" data-toggle="modal" data-target="#add-rule-modal">
+                <img src="plus-ico.svg" alt="" class="action-button"> &nbsp; Add Rule
+            </button>
+            <div id="add-rule-modal" class="modal fade" role="dialog">
+                <div class="modal-dialog">
+
+                    <!-- Modal content-->
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title">Add Rule</h4>
+                        </div>
+                        <div class="modal-body">
+                            <h5>Specify the following information to add a schema.</h5>
+                            <!-- form to add rule -->
+                            <div>
+                                <div class="container" align="left">
+                                    <div class="menu_item">Key</div>
+                                    <input type="text" id="rule-name" class="form-control"><br/>
+                                    <div class="menu_item">Actionable Conditions</div>
+                                    <textarea rows="10" cols="100" id="actionable-conditions" class="form-control" placeholder="Enter conditions in this rule in the format [condition] => [action], one condition per line"></textarea><br/>
+                                </div>
+                            </div>
+                            <!-- end form to add rule -->
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-info" data-dismiss="modal" onclick="addRule()">Add Rule</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        function openTab(name) {
+            var x = document.getElementsByClassName("contents");
+            for (var i = 0; i < x.length; i++) {
+                x[i].style.display = 'none';
+                var nameParts = x[i].id.split('-');
+                var tabButton = document.getElementById(nameParts[0] + '-nav-button');
+                tabButton.style.color = 'white';
+            }
+            var activeTabContainer = document.getElementById(name);
+            var nameParts = name.split('-');
+            var activeTabButton = document.getElementById(nameParts[0] + '-nav-button');
+            activeTabContainer.style.display = 'block';
+            activeTabButton.style.color = 'darkorange';
+        }
+
+        function addSchema() {
+            var name = document.getElementById('schema-name').value;
+            if (!name) {
+                alert("Please provide a name for the schema");
+            }
+            var displayName = document.getElementById('schema-display-name').value;
+            if (!displayName) {
+                displayName = name;
+            }
+            var description = document.getElementById('schema-description').value;
+            if (!description) {
+                description = name;
+            }
+            var uniqueFieldNamesInput = document.getElementById('schema-unique-field-names').value;
+            if (!uniqueFieldNamesInput) {
+                alert("Unique Field Names are mandatory for schemas. Please enter them one field per line.");
+            }
+            var uniqueFieldNames = uniqueFieldNamesInput.split('\n');
+            var directivesInput = document.getElementById('schema-directives').value;
+            if (!directivesInput) {
+                alert("Directives are mandatory for schemas. Please enter them one directive per line.");
+            }
+            var directives = directivesInput.split('\n');
+
+            $.ajax({
+                type: 'PUT',
+                url: "../methods/schemas/" + name,
+                contentType: 'application/json',
+                data: JSON.stringify({ "name": name, "displayName": displayName, "description": description, "uniqueFieldNames": uniqueFieldNames, "directives": directives })
+            })
+            .done(function( data ) {
+                refreshSchemas();
+                alert("Added schema '" + name + "' successfully.");
+                document.getElementById('schema-name').value = '';
+                document.getElementById('schema-display-name').value = '';
+                document.getElementById('schema-description').value = '';
+                document.getElementById('schema-unique-field-names').value = '';
+                document.getElementById('schema-directives').value = '';
+                $('#add-schema-modal').modal('hide');
+            })
+            .fail( function(xhr, textStatus, errorThrown) {
+                // todo: do proper error handling - see upload file method
+                alert("error!" + errorThrown);
+            })
+        }
+
+        function refreshSchemas() {
+            $.ajax({
+                type: 'GET',
+                url: "../methods/schemas"
+            })
+            .done(function( data ) {
+                var tableHtml = "<table id='schema-table' class='table'>" +
+                        "<thead>" +
+                        "<tr>" +
+                        "<th>Name</th>" +
+                        "<th>Display Name</th>" +
+                        "<th>Description</th>" +
+                        "<th>Unique Fields</th>" +
+                        "<th>Directives</th>" +
+                        "<th>Creation Time</th>" +
+                        "<th>Last Modified Time</th>" +
+                        "<th>Operations</th>" +
+                        "</tr>" +
+                        "</thead>" +
+                        "<tbody>";
+
+                if (data.length > 0) {
+                    for (var i = 0; i < data.length; i++) {
+                        tableHtml += schemaRow(data[i]);
+                    }
+                }
+
+                tableHtml += "</tbody></table>";
+
+                $("#schema-table-placeholder").html(tableHtml);
+
+            })
+            .fail( function(xhr, textStatus, errorThrown) {
+                alert("error! " + errorThrown);
+            })
+        }
+
+        function schemaRow(data) {
+            var schema = data.schema;
+            var name = schema.name;
+            var displayName = schema.displayName;
+            var description = schema.description;
+            var uniqueFields = schema.uniqueFieldNames.join("<br/>");
+            var directives = schema.directives.join("<br/>");
+            var creationTime = new Date(data.created).toLocaleTimeString();
+            var lastModificationTime = new Date(data.lastModified).toLocaleTimeString();
+
+            return "<tr>" +
+                    "<td>" + "<img src='schema-icon.png' alt='' class='action-button'> &nbsp;" + name + "</td>" +
+                    "<td>" + displayName + "</td>" +
+                    "<td>" + description + "</td>" +
+                    "<td>" + uniqueFields + "</td>" +
+                    "<td>" + directives + "</td>" +
+                    "<td>" + creationTime + "</td>" +
+                    "<td>" + lastModificationTime + "</td>" +
+                    "<td>" + "<img src='delete-icon.png' alt='' class='action-button' onclick='deleteSchema(\"" + name + "\")'/>" + "</td>" +
+                    "</tr>";
+        }
+
+        function deleteSchema(schema) {
+            $.ajax({
+                type: 'DELETE',
+                url: "../methods/schemas/" + schema
+            })
+            .done(function( data ) {
+                refreshSchemas();
+            })
+            .fail( function(xhr, textStatus, errorThrown) {
+                // todo: do proper error handling - see upload file method
+                alert("error! " + errorThrown);
+            })
+        }
+
+        function addRule() {
+            var name = document.getElementById('rule-name').value;
+            if (!name) {
+                alert("Please provide a name for the rule");
+            }
+            var actionableConditionsInput = document.getElementById('actionable-conditions').value;
+            if (!actionableConditionsInput) {
+                alert("Actionable conditions are mandatory for schemas. Please enter them one per line." +
+                    "Each actionable condition consists of a condition and an action (email or sms) separated by '=>'");
+            }
+            var actionableConditions = actionableConditionsInput.split('\n');
+            var conditions = [];
+            for (var i = 0; i < actionableConditions.length; i++) {
+                var parts = actionableConditions[i].split('=>');
+                var actionableCondition = {
+                    "condition": parts[0].trim(),
+                    "actionType": parts[1].trim()
+                }
+                conditions.push(actionableCondition);
+            }
+
+            $.ajax({
+                type: 'PUT',
+                url: "../methods/rules/" + name,
+                contentType: 'application/json',
+                data: JSON.stringify({ "name": name, "conditions": conditions })
+            })
+            .done(function( data ) {
+                refreshRules();
+                alert("Added rule '" + name + "' successfully.");
+                document.getElementById('rule-name').value = '';
+                document.getElementById('actionable-conditions').value = '';
+                $('#add-rule-modal').modal('hide');
+            })
+            .fail( function(xhr, textStatus, errorThrown) {
+                // todo: do proper error handling - see upload file method
+                alert("error!" + errorThrown);
+            })
+        }
+
+        function refreshRules() {
+            $.ajax({
+                type: 'GET',
+                url: "../methods/rules"
+            })
+            .done(function( data ) {
+                var tableHtml = "<table id='rules-table' class='table'>" +
+                        "<thead>" +
+                        "<tr>" +
+                        "<th>Key</th>" +
+                        "<th>Conditions</th>" +
+                        "<th>Operations</th>" +
+                        "</tr>" +
+                        "</thead>" +
+                        "<tbody>";
+
+                if (data.length > 0) {
+                    for (var i = 0; i < data.length; i++) {
+                        tableHtml += ruleRow(data[i]);
+                    }
+                }
+
+                tableHtml += "</tbody></table>";
+
+                $("#rules-table-placeholder").html(tableHtml);
+
+            })
+            .fail( function(xhr, textStatus, errorThrown) {
+                alert("error! " + errorThrown);
+            })
+        }
+
+        function ruleRow(data) {
+            var name = data.name;
+            var conditionsList = data.conditions;
+            var conditionsText = '';
+            for (var i = 0; i < conditionsList.length; i++) {
+                var condition = conditionsList[i].condition;
+                var actionType = conditionsList[i].actionType;
+                conditionsText += '<em>Condition:</em><b>' + condition + '</b>    =>    <em>Action:</em> <b>' + actionType + '</b>';
+                if (i != conditionsList.length) {
+                    conditionsText += '<br/>'
+                }
+            }
+
+            return "<tr>" +
+                    "<td>" + "<img src='schema-icon.png' alt='' class='action-button'> &nbsp;" + name + "</td>" +
+                    "<td>" + conditionsText + "</td>" +
+                    "<td>" + "<img src='delete-icon.png' alt='' class='action-button' onclick='deleteRule(\"" + name + "\")'/>" + "</td>" +
+                    "</tr>";
+        }
+
+        function deleteRule(rule) {
+            $.ajax({
+                type: 'DELETE',
+                url: "../methods/rules/" + rule
+            })
+            .done(function( data ) {
+                refreshRules();
+            })
+            .fail( function(xhr, textStatus, errorThrown) {
+                // todo: do proper error handling - see upload file method
+                alert("error! " + errorThrown);
+            })
+        }
+
+        function refresh() {
+            refreshSchemas();
+            refreshRules();
+            document.getElementById('schema-nav-button').style.color = 'darkorange';
+            // $('#add-schema-modal').modal('hide');
+        }
+
+    </script>
+</body>
+</html>

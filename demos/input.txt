@@ -1,0 +1,6 @@
+{device_id: device001, name: bob, "ts": 1489433413, heart_rate: 87}
+{device_id: device001, name: bob, "ts": 1489536329, heart_rate: 91}
+{device_id: device001, name: bob, "ts": 1489596130, heart_rate: 102}
+{device_id: device002, name: bob, "ts": 1489433872, heart_rate: 98}
+{device_id: device002, name: bob, "ts": 1489539825, heart_rate: 106}
+{device_id: device002, name: bob, "ts": 1489593189, heart_rate: 110}

@@ -1,0 +1,14 @@
+EventParser
+  - Handle missing schema.
+  - Validate that 'hash' is not a field in the original record.
+  - Do we want to maintain the json format of the original event? 'write-as-json-map' directive changes the structure/format a bit.
+  - Do we want hash in the written json? It's currently not in there.
+  - Check that outputRecords.size() == inputRecords.size(), for the two pipeline.execute().
+
+RulesExecutor:
+  - Handle missing rules.
+  - (Only SparkCompute) Compute key, in case its not already known, such as when EventParser plugin doesn't precede this.
+  - Note that 'hash' is not being put in the output record? Neither is 'key'. Do we want it there?
+
+Misc
+  - Introduce update endpoint in Rules and Schema http handlers?

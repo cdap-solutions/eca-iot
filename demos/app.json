@@ -1,0 +1,90 @@
+{
+  "config":{
+    "batchIntervalComment": "Note that the batch interval must not be less than 1m, due to the sink being used. Otherwise, a PartitionAlreadyExists exception will be encountered.",
+    "batchInterval":"1m",
+    "extraJavaOpts":"",
+    "disableCheckpoints":false,
+    "stopGracefully":true,
+    "stages":[
+      {
+        "name":"eventparser",
+        "plugin":{
+          "name":"EventParser",
+          "type":"sparkcompute",
+          "properties":{
+            "eventField":"event"
+          }
+        }
+      },
+      {
+        "name":"rulesexecutor",
+        "plugin":{
+          "name":"RulesExecutor",
+          "type":"sparkcompute",
+          "properties":{
+            "eventField":"event"
+          }
+        }
+      },
+      {
+        "name": "Kafka",
+        "plugin": {
+          "name": "Kafka",
+          "type": "streamingsource",
+          "label": "Kafka",
+          "artifact": {
+            "name": "spark-plugins",
+            "version": "1.6.0",
+            "scope": "SYSTEM"
+          },
+          "properties": {
+            "schema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"event\",\"type\":\"string\"}]}",
+            "format": "text",
+            "brokers": "localhost:9092",
+            "referenceName": "kafkaSource",
+            "topic": "test",
+            "defaultInitialOffset": "-2"
+          }
+        }
+      },
+      {
+        "name":"sink",
+        "plugin":{
+          "name":"TPFSAvro",
+          "type":"batchsink",
+          "properties":{
+            "schema":"{\"type\":\"record\",\"name\":\"event\",\"fields\":[{\"name\":\"event\",\"type\":\"string\"},{\"name\":\"sms\",\"type\":[\"boolean\",\"null\"]}]}",
+            "name":"output"
+          }
+        }
+      }
+    ],
+    "connections":[
+      {
+        "from":"eventparser",
+        "to":"rulesexecutor"
+      },
+      {
+        "from":"rulesexecutor",
+        "to":"sink"
+      },
+      {
+        "from":"Kafka",
+        "to":"eventparser"
+      }
+    ],
+    "resources":{
+      "virtualCores":1,
+      "memoryMB":1024
+    },
+    "driverResources":{
+      "virtualCores":1,
+      "memoryMB":1024
+    },
+    "clientResources":{
+      "virtualCores":1,
+      "memoryMB":1024
+    },
+    "stageLoggingEnabled":true
+  }
+}
