@@ -22,7 +22,6 @@ import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import co.cask.wrangler.api.PipelineContext;
 
 import java.io.Serializable;
-import java.util.Collections;
 import java.util.Map;
 
 /**

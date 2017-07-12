@@ -33,10 +33,10 @@ import co.cask.wrangler.api.Record;
 import co.cask.wrangler.internal.PipelineExecutor;
 import co.cask.wrangler.internal.TextDirectives;
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
+import org.apache.spark.api.java.Optional;
 import org.apache.spark.api.java.function.FlatMapFunction;
 import org.apache.spark.api.java.function.Function;
 import scala.Tuple2;
@@ -127,7 +127,7 @@ public class EventParser extends SparkCompute<StructuredRecord, StructuredRecord
 
     return joined.flatMap(new FlatMapFunction<Tuple2<Integer,Iterable<Tuple2<Map<String, Object>, Optional<Row>>>>, StructuredRecord>() {
       @Override
-      public Iterable<StructuredRecord> call(Tuple2<Integer, Iterable<Tuple2<Map<String, Object>, Optional<Row>>>> integerIterableTuple2) throws Exception {
+      public Iterator<StructuredRecord> call(Tuple2<Integer, Iterable<Tuple2<Map<String, Object>, Optional<Row>>>> integerIterableTuple2) throws Exception {
         Iterable<Tuple2<Map<String, Object>, Optional<Row>>> tuples = integerIterableTuple2._2();
         Tuple2<Map<String, Object>, Optional<Row>> tuple = tuples.iterator().next();
         // we already know the row is present (we filtered absent rows above)
@@ -152,7 +152,7 @@ public class EventParser extends SparkCompute<StructuredRecord, StructuredRecord
         for (Record record : execute) {
           structuredRecords.add(toStructuredRecord(record));
         }
-        return structuredRecords;
+        return structuredRecords.iterator();
       }
     });
   }

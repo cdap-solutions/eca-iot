@@ -28,6 +28,7 @@ import co.cask.eca.service.util.SchemaManager;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.net.URL;
@@ -37,6 +38,7 @@ import java.util.List;
 /**
  * Tests for {@link SchemaHttpHandler}.
  */
+@Ignore
 public class ECAAppTest extends TestBase {
 
   @Override

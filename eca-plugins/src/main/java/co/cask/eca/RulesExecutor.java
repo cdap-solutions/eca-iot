@@ -32,12 +32,11 @@ import co.cask.wrangler.api.Record;
 import co.cask.wrangler.internal.PipelineExecutor;
 import co.cask.wrangler.internal.TextDirectives;
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
-import com.google.gson.Gson;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
+import org.apache.spark.api.java.Optional;
 import org.apache.spark.api.java.function.FlatMapFunction;
 import org.apache.spark.api.java.function.Function;
 import org.slf4j.Logger;
@@ -100,7 +99,7 @@ public class RulesExecutor extends SparkCompute<StructuredRecord, StructuredReco
 
     return joined.flatMap(new FlatMapFunction<Tuple2<String,Iterable<Tuple2<StructuredRecord,Optional<Row>>>>, StructuredRecord>() {
       @Override
-      public Iterable<StructuredRecord> call(Tuple2<String, Iterable<Tuple2<StructuredRecord, Optional<Row>>>> integerIterableTuple2) throws Exception {
+      public Iterator<StructuredRecord> call(Tuple2<String, Iterable<Tuple2<StructuredRecord, Optional<Row>>>> integerIterableTuple2) throws Exception {
         Iterable<Tuple2<StructuredRecord, Optional<Row>>> tuples = integerIterableTuple2._2();
         Tuple2<StructuredRecord, Optional<Row>> tuple = tuples.iterator().next();
         // we already know the row is present (we filtered absent rows above)
@@ -146,7 +145,7 @@ public class RulesExecutor extends SparkCompute<StructuredRecord, StructuredReco
           }
           outputStructuredRecords.add(toStructuredRecord(outputRecord, conditionResults));
         }
-        return outputStructuredRecords;
+        return outputStructuredRecords.iterator();
       }
     });
   }

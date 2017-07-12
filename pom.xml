@@ -79,9 +79,9 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <cdap.version>4.1.0</cdap.version>
+    <cdap.version>4.2.0</cdap.version>
     <wrangler.version>1.2.1</wrangler.version>
-    <spark.version>1.6.1</spark.version>
+    <spark.version>2.1.0</spark.version>
     <guava.version>19.0</guava.version>
     <!-- properties for script build step that creates the config files for the artifacts -->
     <widgets.dir>widgets</widgets.dir>
@@ -217,6 +217,12 @@
       <artifactId>cdap-integration-test</artifactId>
       <version>${cdap.version}</version>
       <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>co.cask.cdap</groupId>
+          <artifactId>cdap-standalone</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>com.google.guava</groupId>
